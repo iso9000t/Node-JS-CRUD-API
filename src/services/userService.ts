@@ -21,4 +21,12 @@ export const createUser = (
   return newUser;
 };
 
-// Export other services as needed
+// Function to get all users
+export const getAllUsers = (): User[] => {
+  return users; // Return the whole array of users
+};
+
+// Find a user by ID
+export const getUserById = (id: string): User | undefined => {
+  return users.find((user) => user.id === id); 
+};

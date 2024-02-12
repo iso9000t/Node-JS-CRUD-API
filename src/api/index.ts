@@ -1,14 +1,27 @@
 import { IncomingMessage, ServerResponse } from 'http';
-import { usersRouter } from './users.js';
+import { usersRouter } from './users';
+import { HttpResponseStatusCode, UserErrorMessage } from '../models/enums';
 
-export function handleRequest(req: IncomingMessage, res: ServerResponse): void {
-  const url = new URL(req.url || '', `http://${req.headers.host}`);
-  switch (url.pathname) {
-    case '/api/users':
-      usersRouter(req, res);
-      break;
-    default:
-      res.statusCode = 404;
-      res.end('Not Found');
+export async function handleRequest(
+  req: IncomingMessage,
+  res: ServerResponse
+): Promise<void> {
+  try {
+    if (req.url?.startsWith('/api/users')) {
+      await usersRouter(req, res);
+    } else {
+      res.writeHead(HttpResponseStatusCode.NotFound, {
+        'Content-Type': 'application/json',
+      });
+      res.end(JSON.stringify({ error: UserErrorMessage.RouteError }));
+    }
+  } catch (error) {
+    console.error(error); // Log the error for debugging purposes
+    if (!res.headersSent) {
+      res.writeHead(HttpResponseStatusCode.InternalServerError, {
+        'Content-Type': 'application/json',
+      });
+      res.end(JSON.stringify({ error: UserErrorMessage.ServerError }));
+    }
   }
 }

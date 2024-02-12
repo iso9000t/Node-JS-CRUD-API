@@ -4,7 +4,6 @@ import http from 'http';
 import { handleRequest } from './api/index'; // Make sure this path correctly points to your request handler
 import { HttpResponseStatusCode, UserErrorMessage } from './models/enums';
 
-// Define the server creation logic
 export const createServer = () =>
   http.createServer((req, res) => {
     handleRequest(req, res).catch((error) => {
@@ -18,7 +17,6 @@ export const createServer = () =>
     });
   });
 
-// Conditionally start the server only if not in test environment
 if (process.env.NODE_ENV !== 'test') {
   const PORT = process.env.PORT || 3000;
   const server = createServer();

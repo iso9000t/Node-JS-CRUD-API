@@ -3,19 +3,21 @@ import {
   createUser,
   getAllUsers,
   getUserById,
-} from '../services/userService.js';
-import { HttpResponseStatusCode, UserErrorMessage } from '../models/enums.js';
-import { parseRequestBody } from '../utils/parseRequestBody.js';
-import { validateUser } from '../validation/userValidation.js';
-import { v4 as uuidv4, validate as uuidValidate } from 'uuid';
-import { User } from 'models/models.js';
+  updateUser,
+  deleteUserById,
+} from '../services/userService';
+import { HttpResponseStatusCode, UserErrorMessage } from '../models/enums';
+import { parseRequestBody } from '../utils/parseRequestBody';
+import { validateUser } from '../validation/userValidation';
+import { validate as uuidValidate } from 'uuid';
+import { User } from '../models/models';
 
 export const usersRouter = async (
   req: IncomingMessage,
   res: ServerResponse
 ) => {
   const url = new URL(req.url || '', `http://${req.headers.host}`);
-  const id = url.pathname.split('/')[3]; // Assuming URL pattern is /api/users/{id}
+  const id = url.pathname.split('/')[3];
 
   if (url.pathname === '/api/users' && req.method === 'GET') {
     // Handle GET all users
@@ -68,6 +70,73 @@ export const usersRouter = async (
         'Content-Type': 'application/json',
       });
       res.end(JSON.stringify({ error: UserErrorMessage.MalformedJSON }));
+    }
+  } else if (req.method === 'PUT' && id) {
+    if (!uuidValidate(id)) {
+      res.writeHead(HttpResponseStatusCode.BadRequest, {
+        'Content-Type': 'application/json',
+      });
+      res.end(JSON.stringify({ error: UserErrorMessage.InvalidId }));
+      return;
+    }
+    try {
+      const userUpdate = await parseRequestBody(req);
+      const user = getUserById(id);
+      if (!user) {
+        res.writeHead(HttpResponseStatusCode.NotFound, {
+          'Content-Type': 'application/json',
+        });
+        res.end(JSON.stringify({ error: UserErrorMessage.NotFound }));
+        return;
+      }
+
+      const [isValid, errorMessage] = validateUser(
+        userUpdate.username,
+        userUpdate.age,
+        userUpdate.hobbies
+      );
+      if (!isValid) {
+        res.writeHead(HttpResponseStatusCode.BadRequest, {
+          'Content-Type': 'application/json',
+        });
+        res.end(JSON.stringify({ error: errorMessage }));
+        return;
+      }
+
+      const updatedUser = updateUser(
+        id,
+        userUpdate.username,
+        userUpdate.age,
+        userUpdate.hobbies
+      );
+      res.writeHead(HttpResponseStatusCode.OK, {
+        'Content-Type': 'application/json',
+      });
+      res.end(JSON.stringify(updatedUser));
+    } catch (e) {
+      res.writeHead(HttpResponseStatusCode.BadRequest, {
+        'Content-Type': 'application/json',
+      });
+      res.end(JSON.stringify({ error: UserErrorMessage.MalformedJSON }));
+    }
+  } else if (req.method === 'DELETE' && id) {
+    if (!uuidValidate(id)) {
+      res.writeHead(HttpResponseStatusCode.BadRequest, {
+        'Content-Type': 'application/json',
+      });
+      res.end(JSON.stringify({ error: UserErrorMessage.InvalidId }));
+      return;
+    }
+
+    const deleted = deleteUserById(id);
+    if (deleted) {
+      res.writeHead(HttpResponseStatusCode.NoContent);
+      res.end();
+    } else {
+      res.writeHead(HttpResponseStatusCode.NotFound, {
+        'Content-Type': 'application/json',
+      });
+      res.end(JSON.stringify({ error: UserErrorMessage.NotFound }));
     }
   } else {
     res.writeHead(HttpResponseStatusCode.NotFound, {

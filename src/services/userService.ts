@@ -30,3 +30,29 @@ export const getAllUsers = (): User[] => {
 export const getUserById = (id: string): User | undefined => {
   return users.find((user) => user.id === id); 
 };
+
+// Update an existing user
+export const updateUser = (
+  id: string,
+  username: string,
+  age: number,
+  hobbies: string[]
+): User | undefined => {
+  const userIndex = users.findIndex((user) => user.id === id);
+  if (userIndex !== -1) {
+    users[userIndex] = { id, username, age, hobbies };
+    return users[userIndex];
+  }
+  return undefined;
+};
+
+// Delete an existing user
+export const deleteUserById = (id: string): boolean => {
+  const userIndex = users.findIndex((user) => user.id === id);
+  if (userIndex !== -1) {
+    users.splice(userIndex, 1);
+    return true;
+  }
+  return false;
+};
+

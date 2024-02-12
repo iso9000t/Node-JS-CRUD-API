@@ -8,7 +8,8 @@
     "start:dev": "nodemon",
     "start:prod": "npm run build && node ./dist/bundle.js",
     "build": "webpack",
-    "test": "jest"
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "keywords": [],
   "author": "",

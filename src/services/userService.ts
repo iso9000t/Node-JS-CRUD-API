@@ -1,4 +1,4 @@
-import { User } from '../models/models.js';
+import { User } from '../models/models';
 import { v4 as uuidv4 } from 'uuid';
 
 // In-memory "database"
@@ -23,7 +23,7 @@ export const createUser = (
 
 // Function to get all users
 export const getAllUsers = (): User[] => {
-  return users; // Return the whole array of users
+  return users;
 };
 
 // Find a user by ID

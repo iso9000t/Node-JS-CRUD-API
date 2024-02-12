@@ -1,4 +1,4 @@
-import { HttpResponseStatusCode, UserErrorMessage } from '../models/enums.js';
+import { HttpResponseStatusCode, UserErrorMessage } from '../models/enums';
 
 export const validateUser = (
   username: string,

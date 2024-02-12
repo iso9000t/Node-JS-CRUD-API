@@ -5,12 +5,12 @@ import {
   getUserById,
   updateUser,
   deleteUserById,
-} from '../services/userService.js';
-import { HttpResponseStatusCode, UserErrorMessage } from '../models/enums.js';
-import { parseRequestBody } from '../utils/parseRequestBody.js';
-import { validateUser } from '../validation/userValidation.js';
+} from '../services/userService';
+import { HttpResponseStatusCode, UserErrorMessage } from '../models/enums';
+import { parseRequestBody } from '../utils/parseRequestBody';
+import { validateUser } from '../validation/userValidation';
 import { validate as uuidValidate } from 'uuid';
-import { User } from '../models/models.js';
+import { User } from '../models/models';
 
 export const usersRouter = async (
   req: IncomingMessage,

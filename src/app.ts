@@ -1,6 +1,7 @@
+import 'dotenv/config';
 import http from 'http';
-import { handleRequest } from './api/index.js';
-import { HttpResponseStatusCode, UserErrorMessage } from './models/enums.js';
+import { handleRequest } from './api/index';
+import { HttpResponseStatusCode, UserErrorMessage } from './models/enums';
 
 const PORT = process.env.PORT || 3000;
 

@@ -6,7 +6,7 @@ const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 export default {
   mode: 'production',
   entry: './src/index.ts',
-  target: 'node',
+  target: 'node', // Target Node.js environment
   module: {
     rules: [
       {
@@ -20,7 +20,12 @@ export default {
     extensions: ['.ts', '.js'],
   },
   output: {
-    filename: 'bundle.cjs',
+    filename: 'bundle.js', // Ensure this is the filename you want
     path: path.resolve(__dirname, 'dist'),
+    libraryTarget: 'module',
+    chunkFormat: 'module', // Combine this line here
+  },
+  experiments: {
+    outputModule: true,
   },
 };

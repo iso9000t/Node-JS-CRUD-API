@@ -5,21 +5,25 @@ import {
   getUserById,
   updateUser,
   deleteUserById,
-} from '../services/userService';
-import { HttpResponseStatusCode, UserErrorMessage } from '../models/enums';
-import { parseRequestBody } from '../utils/parseRequestBody';
-import { validateUser } from '../validation/userValidation';
+} from '../services/userService.js';
+import { HttpResponseStatusCode, UserErrorMessage } from '../models/enums.js';
+import { parseRequestBody } from '../utils/parseRequestBody.js';
+import { validateUser } from '../validation/userValidation.js';
 import { validate as uuidValidate } from 'uuid';
-import { User } from '../models/models';
+import { User } from '../models/models.js';
 
 export const usersRouter = async (
   req: IncomingMessage,
   res: ServerResponse
 ) => {
   const url = new URL(req.url || '', `http://${req.headers.host}`);
-  const id = url.pathname.split('/')[3];
+  const path = url.pathname.endsWith('/')
+    ? url.pathname.slice(0, -1)
+    : url.pathname;
+  const segments = path.split('/');
+  const id = segments.length > 3 ? segments[3] : undefined;
 
-  if (url.pathname === '/api/users' && req.method === 'GET') {
+  if (path === '/api/users' && req.method === 'GET') {
     // Handle GET all users
     const users: User[] = getAllUsers();
     res.writeHead(HttpResponseStatusCode.OK, {
@@ -47,7 +51,7 @@ export const usersRouter = async (
       'Content-Type': 'application/json',
     });
     res.end(JSON.stringify(user));
-  } else if (req.method === 'POST') {
+  } else if (req.method === 'POST' && path === '/api/users') {
     try {
       const { username, age, hobbies } = await parseRequestBody(req);
       const [isValid, errorMessage] = validateUser(username, age, hobbies);
